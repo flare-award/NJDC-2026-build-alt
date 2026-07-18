@@ -15,7 +15,7 @@ const STAGE_DESCRIPTIONS: Record<number, string> = {
 };
 
 export default function Home() {
-  const { teams, matches, settings } = useData();
+  const { teams, players, matches, settings } = useData();
 
   const featured = matches
     .filter((m) => m.status !== "finished")
@@ -194,29 +194,89 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TEAMS PREVIEW */}
+      {/* СОСТАВЫ */}
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-end justify-between">
-          <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">Участники</h2>
-          <Link to="/teams" className="text-sm font-medium text-zinc-400 hover:text-white">
+        <div className="mb-10 flex items-end justify-between">
+          <div>
+            <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">Составы</h2>
+            <p className="mt-2 text-sm text-zinc-500 max-w-md">
+              6 команд по 2 игрока. Полный состав участников NJDC 2026
+            </p>
+          </div>
+          <Link to="/teams" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
             Все команды →
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {teams
             .slice()
             .sort((a, b) => a.sort_order - b.sort_order)
-            .map((t) => (
-              <Link
-                key={t.id}
-                to="/teams"
-                className="flex flex-col items-center gap-3 rounded-xl border border-white/8 bg-white/[0.02] p-5 text-center transition-colors hover:border-white/20"
-              >
-                <TeamLogo src={t.logo_url} alt={t.name} size={56} />
-                <span className="text-sm font-semibold text-white">{t.name}</span>
-                <span className="text-[11px] text-zinc-500">{t.players_label}</span>
-              </Link>
-            ))}
+            .map((team) => {
+              const roster = players.filter((p) => p.team_id === team.id);
+              return (
+                <div
+                  key={team.id}
+                  className="group rounded-2xl border border-white/8 bg-white/[0.02] p-6 transition-all hover:border-fuchsia-500/30 hover:bg-white/[0.03]"
+                >
+                  {/* Team Header */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="shrink-0">
+                      <TeamLogo src={team.logo_url} alt={team.name} size={68} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-semibold uppercase tracking-[3px] text-zinc-500 mb-0.5">
+                        КОМАНДА {team.code}
+                      </div>
+                      <h3 className="font-display text-2xl font-bold text-white tracking-[-0.02em] leading-none">
+                        {team.name}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Players */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3.5 px-1">
+                      <div className="h-px flex-1 bg-white/10"></div>
+                      <span className="text-[10px] font-bold uppercase tracking-[2px] text-zinc-400">Игроки</span>
+                      <div className="h-px flex-1 bg-white/10"></div>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {roster.map((player) => (
+                        <div
+                          key={player.id}
+                          className="flex items-center gap-4 rounded-xl border border-white/5 bg-black/40 px-4 py-[13px] group-hover:border-white/10 transition-colors"
+                        >
+                          {/* Player Avatar Placeholder */}
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-sm font-bold text-zinc-300">
+                            {player.nickname[0].toUpperCase()}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="font-semibold text-white text-[15px] leading-tight tracking-[-0.01em]">
+                              {player.nickname}
+                            </div>
+                            <div className="text-xs text-zinc-400 mt-px leading-none truncate">
+                              {player.role}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link
+            to="/teams"
+            className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+          >
+            Посмотреть все команды и детальную информацию <ArrowRight size={15} />
+          </Link>
         </div>
       </section>
     </div>
